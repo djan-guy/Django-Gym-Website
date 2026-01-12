@@ -1,0 +1,148 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0C0C0C;
+}
+
+header {
+    background-color:#0C0C0C;
+}
+
+.header-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.header-box h1 {
+    color: white;
+    padding-left: 25px;
+}
+
+.title h1 {
+    padding-left: 40px;
+    color: white;
+    font-size: 75px;
+}
+
+.purple h1 {
+    padding-left: 40px;
+    color: #1747DE;
+    font-size: 75px;
+}
+
+.header-box nav a {
+    margin-left: 15px;
+    text-decoration: none;
+    color: white;
+}
+
+.home-button {
+    background: linear-gradient(to right, #801C97, #591EA2);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: border 0.3s;
+    margin-top: 20px;
+    margin-left: 40px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.subtitle h1 {
+    padding-top: 60px;
+    padding-left: 40px;
+    color: white;
+    font-size: 35px;
+}
+
+.paragraph h2 {
+    padding-top: 20px;
+    padding-left: 40px;
+    font-weight: normal;
+    color: white;
+    max-width: 400px;
+}
+
+.box {
+  flex: 1;
+  padding: 20px;
+}
+
+.box img {
+    max-width: 400px;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  width: 1024px;
+}
+
+.user {
+    color: white;
+}
+
+.user button {
+    background: linear-gradient(to right, #801C97, #591EA2);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: border 0.3s;
+    margin-top: 20px;
+    margin-left: 40px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.logout-button {
+    color: white;
+    background-color: black;
+    margin-left: 290px;
+    margin-bottom: 5px;
+}
+
+.news {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.news .page {
+    width: 100%;
+    max-width: 700px;
+    margin-bottom: 2rem;
+}
+
+.news img {
+    max-width: 50%;
+    height: auto;
+    display: block;
+    margin: 1rem auto;
+}
+
+.news .delete form {
+    display: flex;
+    justify-content: center;
+}

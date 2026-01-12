@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    FitNova - News
+{% endblock %}
+
+{% block content %}
+    <section>
+        <div class="user">
+            <div class="news">
+                <div class="title">
+                    <h1>News</h1>
+                </div>
+                <a href="{% url 'pages:page-new' %}">Add Page</a>
+                {% if pages %}
+                    {% for page in pages %}
+                            <article class="page">
+                                <h1>{{ page.title }}</h1>
+                                <h2><small>{{ page.date|date:"M d, Y H:i" }}</small></h2>
+                                <h2>{{ page.body|truncatewords:30 }}</h2>
+                                {% if page.image %}
+                                    <img src="{{ page.image.url }}" alt="{{ page.title }}">
+                                {% endif %}
+                                <div class="delete">
+                                    <form action="{% url 'pages:page-delete' page.pk %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit">Delete</button>
+                                    </form>
+                                </div>
+                            </article>
+                {% endfor %}
+            {% else %}
+                <h2>No pages uploaded yet, click "Add New" to create one as an admin.</h2>
+            {% endif %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
