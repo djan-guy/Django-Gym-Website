@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<meta charset="UTF-8">
+<title>
+    {% block title %}
+        FitNova
+    {% endblock %}
+</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+<style>
+    /* Accessibility overrides */
+    body.access-large-text { font-size: 1.25rem !important; }
+    body.access-xlarge-text { font-size: 1.45rem !important; }
+
+    body.access-contrast {
+        background-color: #000 !important;
+        color: #fff !important;
+    }
+
+    body.access-contrast a {
+        color: #9cf !important;
+    }
+
+    .accessibility-controls {
+        display: flex;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        background: #f2f2f2;
+        border-bottom: 1px solid #ccc;
+    }
+
+    .accessibility-controls button {
+        padding: 0.3rem 0.6rem;
+        cursor: pointer;
+    }
+</style>
+
+<body>
+
+<header>
+    <div class="header-box">
+        <h1>FitNova</h1>
+
+        <!-- Accessibility Controls -->
+        <div class="accessibility-controls">
+            <button onclick="setTextSize('normal')">A</button>
+            <button onclick="setTextSize('large')">A+</button>
+            <button onclick="setTextSize('xlarge')">A++</button>
+            <button onclick="toggleContrast()">Contrast</button>
+        </div>
+
+        <nav>
+            {% if user.is_authenticated %}
+                <form class='logout' action="{% url 'users:logout' %}" method='post'>
+                    {% csrf_token %}
+                    <button class='logout-button' aria-label='Logout' title='Logout'>Logout</button>
+                </form>
+            {% endif %}
+            <a href="/"> HOME</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'page:list' %}"> NEWS</a>
+                <a href="{% url 'membership:membership_page' %}">MEMBERSHIP</a>
+                <a href="{% url 'tracking:page' %}"> TRACKING</a>
+                <a href="{% url 'users:profile' %}"> PROFILE</a>
+            {% else %}
+                <a href="{% url 'users:register' %}"> REGISTER</a>
+                <a href="{% url 'users:login' %}"> LOGIN</a>
+            {% endif %}
+        </nav>
+    </div>
+</header>
+
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
+
+<script>
+    // Load saved settings
+    document.addEventListener("DOMContentLoaded", () => {
+        const textSize = localStorage.getItem("textSize");
+        const contrast = localStorage.getItem("contrast");
+
+        if (textSize) document.body.classList.add(textSize);
+        if (contrast === "on") document.body.classList.add("access-contrast");
+    });
+
+    function setTextSize(size) {
+        document.body.classList.remove("access-large-text", "access-xlarge-text");
+
+        if (size === "large") {
+            document.body.classList.add("access-large-text");
+            localStorage.setItem("textSize", "access-large-text");
+        } else if (size === "xlarge") {
+            document.body.classList.add("access-xlarge-text");
+            localStorage.setItem("textSize", "access-xlarge-text");
+        } else {
+            localStorage.removeItem("textSize");
+        }
+    }
+
+    function toggleContrast() {
+        document.body.classList.toggle("access-contrast");
+
+        if (document.body.classList.contains("access-contrast")) {
+            localStorage.setItem("contrast", "on");
+        } else {
+            localStorage.setItem("contrast", "off");
+        }
+    }
+</script>
+
+</body>
+</html>

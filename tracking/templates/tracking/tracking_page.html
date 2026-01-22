@@ -1,0 +1,282 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    FitNova - Tracker
+{% endblock %}
+
+{% block content %}
+  <div class="user">
+    <div class="news">
+      <h2>Fitness Tracker</h2>
+      <div class="note">
+
+        <!-- Unit Selector -->
+        <div>
+          <h3>
+            Units:
+            <select id="unit-select" onchange="switchUnits()">
+              <option value="metric">Metric (kg / cm)</option>
+              <option value="imperial">Imperial (lbs / ft+in)</option>
+              <option value="mixed">Mixed (kg / ft+in)</option>
+            </select>
+          </h3>
+        </div>
+
+        <!-- Metric Inputs -->
+        <div id="metric-inputs">
+          <h3>Weight (kg): <input type="number" id="weight" min="0" value="0"></h3>
+          <h3>Height (cm): <input type="number" id="height" min="0" value="0"></h3>
+        </div>
+
+        <!-- Imperial Inputs -->
+        <div id="imperial-inputs" style="display:none;">
+          <h3>Weight (lbs): <input type="number" id="weight-lbs" min="0" value="0"></h3>
+          <h3>
+            Height:
+            <input type="number" id="height-ft" min="0" value="0" style="width:60px;"> ft
+            <input type="number" id="height-in" min="0" value="0" style="width:60px;"> in
+          </h3>
+        </div>
+
+        <!-- Mixed Inputs -->
+        <div id="mixed-inputs" style="display:none;">
+          <h3>Weight (kg): <input type="number" id="weight-kg-mixed" min="0" value="0"></h3>
+          <h3>
+            Height:
+            <input type="number" id="mixed-height-ft" min="0" value="0" style="width:60px;"> ft
+            <input type="number" id="mixed-height-in" min="0" value="0" style="width:60px;"> in
+          </h3>
+        </div>
+
+        <!-- BMI Display -->
+        <div class="bmi-display">
+          <h3>BMI: <span id="bmi">0</span></h3>
+          <h4>BMI Status: <span id="bmi-status">N/A</span></h4>
+        </div>
+
+        <!-- Bodyfat Input -->
+        <div class="bodyfat-input">
+          <h3>Bodyfat %: <input type="number" id="bodyfat" min="0" max="100" value="0"></h3>
+        </div>
+
+        <!-- Buttons -->
+        <div class="delete">
+          <button class="home-button" onclick="calculateBMI()">Calculate</button>
+          <button class="home-button" onclick="resetBMI()">Reset</button>
+        </div>
+
+        <!-- History Section -->
+        <div class="history-section">
+          <h3>History</h3>
+
+          <button onclick="clearAllData()" class="home-button" style="margin-bottom:10px;">
+            Clear All Data
+          </button>
+
+          <table id="history-table" border="1" style="width:100%; text-align:center;">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Weight</th>
+                <th>Height</th>
+                <th>Bodyfat %</th>
+                <th>BMI</th>
+              </tr>
+            </thead>
+            <tbody id="history-body"></tbody>
+          </table>
+
+          <h3>BMI History Graph</h3>
+          <canvas id="bmiChart"></canvas>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+  function switchUnits() {
+    const unit = document.getElementById("unit-select").value;
+
+    document.getElementById("metric-inputs").style.display = (unit === "metric") ? "block" : "none";
+    document.getElementById("imperial-inputs").style.display = (unit === "imperial") ? "block" : "none";
+    document.getElementById("mixed-inputs").style.display = (unit === "mixed") ? "block" : "none";
+
+    resetBMI();
+  }
+
+  function calculateBMI() {
+    const unit = document.getElementById("unit-select").value;
+    let bmi = 0;
+
+    if (unit === "metric") {
+      const weight = parseFloat(document.getElementById("weight").value);
+      const heightCm = parseFloat(document.getElementById("height").value);
+      if (!weight || !heightCm || heightCm <= 0) return alert("Please enter valid height and weight.");
+      const heightM = heightCm / 100;
+      bmi = weight / (heightM * heightM);
+    }
+
+    else if (unit === "imperial") {
+      const weightLbs = parseFloat(document.getElementById("weight-lbs").value);
+      const heightFt = parseFloat(document.getElementById("height-ft").value);
+      const heightIn = parseFloat(document.getElementById("height-in").value);
+      if (!weightLbs || (!heightFt && !heightIn)) return alert("Please enter valid height and weight.");
+      const totalInches = (heightFt * 12) + heightIn;
+      bmi = (weightLbs / (totalInches * totalInches)) * 703;
+    }
+
+    else if (unit === "mixed") {
+      const weightKg = parseFloat(document.getElementById("weight-kg-mixed").value);
+      const heightFt = parseFloat(document.getElementById("mixed-height-ft").value);
+      const heightIn = parseFloat(document.getElementById("mixed-height-in").value);
+      if (!weightKg || (!heightFt && !heightIn)) return alert("Please enter valid height and weight.");
+      const totalInches = (heightFt * 12) + heightIn;
+      const heightM = (totalInches * 2.54) / 100;
+      bmi = weightKg / (heightM * heightM);
+    }
+
+    bmi = parseFloat(bmi).toFixed(1);
+    document.getElementById("bmi").textContent = bmi;
+
+    let status = "";
+    if (bmi < 18.5) status = "Underweight";
+    else if (bmi < 25) status = "Normal weight";
+    else if (bmi < 30) status = "Overweight";
+    else status = "Obese";
+
+    document.getElementById("bmi-status").textContent = status;
+
+    // Bodyfat from input
+    let bodyfat = parseFloat(document.getElementById("bodyfat").value);
+    if (isNaN(bodyfat) || bodyfat < 0 || bodyfat > 100) {
+      alert("Bodyfat must be between 0 and 100.");
+      return;
+    }
+
+    autoSaveEntry(bodyfat, bmi);
+  }
+
+  function resetBMI() {
+    document.getElementById("weight").value = 0;
+    document.getElementById("height").value = 0;
+    document.getElementById("weight-lbs").value = 0;
+    document.getElementById("height-ft").value = 0;
+    document.getElementById("height-in").value = 0;
+    document.getElementById("weight-kg-mixed").value = 0;
+    document.getElementById("mixed-height-ft").value = 0;
+    document.getElementById("mixed-height-in").value = 0;
+    document.getElementById("bodyfat").value = 0;
+
+    document.getElementById("bmi").textContent = "0";
+    document.getElementById("bmi-status").textContent = "N/A";
+  }
+
+  function autoSaveEntry(bodyfat, bmi) {
+    const unit = document.getElementById("unit-select").value;
+
+    let weight, height;
+
+    if (unit === "metric") {
+      weight = document.getElementById("weight").value + " kg";
+      height = document.getElementById("height").value + " cm";
+    } else if (unit === "imperial") {
+      weight = document.getElementById("weight-lbs").value + " lbs";
+      height = document.getElementById("height-ft").value + "ft " +
+               document.getElementById("height-in").value + "in";
+    } else {
+      weight = document.getElementById("weight-kg-mixed").value + " kg";
+      height = document.getElementById("mixed-height-ft").value + "ft " +
+               document.getElementById("mixed-height-in").value + "in";
+    }
+
+    const entry = {
+      date: new Date().toLocaleString(),
+      weight,
+      height,
+      bodyfat,
+      bmi
+    };
+
+    let history = JSON.parse(localStorage.getItem("fatnova-history")) || [];
+    history.push(entry);
+    localStorage.setItem("fatnova-history", JSON.stringify(history));
+
+    loadHistory();
+    updateGraph();
+  }
+
+  function loadHistory() {
+    const history = JSON.parse(localStorage.getItem("fatnova-history")) || [];
+    const body = document.getElementById("history-body");
+    body.innerHTML = "";
+
+    history.forEach(entry => {
+      body.innerHTML += `
+        <tr>
+          <td>${entry.date}</td>
+          <td>${entry.weight}</td>
+          <td>${entry.height}</td>
+          <td>${entry.bodyfat}%</td>
+          <td>${entry.bmi}</td>
+        </tr>
+      `;
+    });
+  }
+
+  let bmiChart = null;
+
+  function updateGraph() {
+    const history = JSON.parse(localStorage.getItem("fatnova-history")) || [];
+    const labels = history.map(e => e.date);
+    const bmiValues = history.map(e => parseFloat(e.bmi));
+
+    const ctx = document.getElementById("bmiChart").getContext("2d");
+
+    if (bmiChart) bmiChart.destroy();
+
+    bmiChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "BMI Over Time",
+          data: bmiValues,
+          borderColor: "blue",
+          borderWidth: 2,
+          fill: false
+        }]
+      }
+    });
+  }
+
+  function clearAllData() {
+    if (!confirm("Are you sure you want to clear ALL data?")) return;
+
+    localStorage.removeItem("fatnova-history");
+    document.getElementById("history-body").innerHTML = "";
+    document.getElementById("bmi").textContent = "0";
+    document.getElementById("bmi-status").textContent = "N/A";
+
+    if (bmiChart) {
+      bmiChart.destroy();
+      bmiChart = null;
+    }
+
+    const ctx = document.getElementById("bmiChart").getContext("2d");
+    bmiChart = new Chart(ctx, {
+      type: "line",
+      data: { labels: [], datasets: [{ label: "BMI Over Time", data: [], borderColor: "blue" }] }
+    });
+  }
+
+  window.onload = function() {
+    loadHistory();
+    updateGraph();
+  };
+  </script>
+
+{% endblock %}
