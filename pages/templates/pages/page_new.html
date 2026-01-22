@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    FitNova (Admin) - New Page
+{% endblock %}
+
+{% block content %}
+    <div class="user">
+    <h2>New Page</h2>
+        <form class="form-with-validation" action="{% url 'pages:page-new' %}" method="post" enctype="multipart/form-data"> {% csrf_token %} {{ form.as_p }} <div class="note-new"> <a href="#" class="form-submit" onclick="this.closest('form').submit(); return false;">Save Page</a> </div> </form>
+    </div>
+{% endblock %}

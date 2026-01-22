@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+    FitNova - Membership
+{% endblock %}
+
+{% block content %}
+<div class="user">
+    <div class="news">
+        <h1 class="signup-title">Join FitNova</h1>
+        <p class="signup-subtitle">Unlock premium workouts and your fitness journey can begin</p>
+
+        <form method="POST" class="signup-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="signup-btn">Purchase Membership</button>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+    FitNova - Home
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="box">
+            <div class="title">
+                <h1>PUSH</h1>
+                <h1>YOUR</h1>
+            </div>
+            <div class="purple"><h1>LIMITS</h1></div>
+            {% if user.is_authenticated %}
+                <a href="membership/">
+                    <button class="home-button">GET STARTED</button>
+                </a>
+            {% else %}
+                <a href="{% url 'users:login' %}">
+                    <button class="home-button">LOGIN</button>
+                </a>
+            {% endif %}
+            <div class="subtitle">
+                <h1>WELCOME</h1>
+            </div>
+            <div class="paragraph">
+                <h2>Train with us to achieve your fitness goals and build a stronger and healthier life.</h2>
+            </div>
+        </div>
+        <div class="box">
+            <img src="static/images/man.png" alt="man">
+        </div>
+    </div>
+{% endblock %}
